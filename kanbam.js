@@ -3,43 +3,34 @@ function generateId() {
   return Math.random().toString(36).substr(2, 9);
 }
 
+var tasks = [];
+
 // Função para converter o tempo inserido pelo usuário
 function convertTime(input) {
   var totalMinutes = parseInt(input);
 
-  if (totalMinutes >= 480) {
-    var days = Math.floor(totalMinutes / 480);
-    var remainingMinutes = totalMinutes % 480;
-    var remainingHours = Math.floor(remainingMinutes / 60);
-    remainingMinutes = remainingMinutes % 60;
+  var days = Math.floor(totalMinutes / 480); // 480 minutos em um dia
+  var remainingMinutes = totalMinutes % 480;
+  var hours = Math.floor(remainingMinutes / 60);
+  var minutes = remainingMinutes % 60;
 
-    return days + " dia(s), " + remainingHours.toString().padStart(2, '0') + ":" + remainingMinutes.toString().padStart(2, '0');
-  } else {
-    var hours = Math.floor(totalMinutes / 60);
-    var minutes = totalMinutes % 60;
+  var timeString = "";
 
-    return hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0');
+  if (days > 0) {
+    timeString += days + (days > 1 ? " dias" : " dia");
   }
-}
 
-// Função para converter o tempo inserido pelo usuário
-function convertTime(input) {
-  var hours = input.substring(0, 2);
-  var minutes = input.substring(2, 4);
-
-  var totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
-
-  if (totalMinutes >= 480) {
-    var days = Math.floor(totalMinutes / 480);
-    var remainingMinutes = totalMinutes % 480;
-    var remainingHours = Math.floor(remainingMinutes / 60);
-    remainingMinutes = remainingMinutes % 60;
-
-    return days + " dia(s), " + remainingHours.toString().padStart(2, '0') + ":" + remainingMinutes.toString().padStart(2, '0');
-  } else {
-    var formattedHours = hours + ":" + minutes;
-    return formattedHours;
+  if (hours > 0) {
+    if (timeString !== "") timeString += ", ";
+    timeString += hours + (hours > 1 ? " horas" : " hora");
   }
+
+  if (minutes > 0) {
+    if (timeString !== "") timeString += ", ";
+    timeString += minutes + (minutes > 1 ? " minutos" : " minuto");
+  }
+
+  return timeString;
 }
 
 // Função para criar um objeto tarefa a partir dos dados informados pelo usuário
@@ -54,9 +45,34 @@ function createTask(name, hours, comment) {
   };
 }
 
+// Função para adicionar uma tarefa
+function addTask(name, hours, comment) {
+  var task = createTask(name, hours, comment);
+  tasks.push(task);
+}
+
+// Função para editar uma tarefa
+function editTask(id, name, hours, comment) {
+  var task = tasks.find(function (t) {
+    return t.id === id;
+  });
+  if (task) {
+    task.name = name;
+    task.hours = hours;
+    task.comment = comment;
+  }
+}
+
+// Função para excluir uma tarefa
+function deleteTask(id) {
+  tasks = tasks.filter(function (t) {
+    return t.id !== id;
+  });
+}
+
 // Função para criar um elemento HTML para representar uma tarefa na interface
 function createTaskElement(task) {
-  var taskElement = $("<div></div>").addClass("card");
+  var taskElement = $("<div></div>").addClass("card").attr("draggable", "true");
   var checkbox = $("<input>").attr("type", "checkbox").prop("checked", task.done);
   var name = $("<span></span>").text(task.name);
   var hours = $("<span></span>").text(task.hours);
@@ -67,18 +83,64 @@ function createTaskElement(task) {
   var deleteButton = $("<span></span>").addClass("delete-icon").html('<i class="fas fa-trash-alt"></i>');
 
   // Adicionando os eventos de clique
-  editButton.on("click", function () {
-    var taskId = $(this).closest(".card").attr("data-id");
-    var task = tasks.find(function (t) {
-      return t.id === taskId;
-    });
-  })
+  editButton.attr("data-id", task.id);
+  deleteButton.attr("data-id", task.id);
 
-  deleteButton.on("click", function () {
-    // Código de exclusão aqui
+  editButton.on("click", function () {
+  var taskId = $(this).attr("data-id");
+  var task = tasks.find(function (t) {
+    return t.id === taskId;
   });
 
-  taskElement.append(checkbox, name, hours, comment, editButton, deleteButton);
+  $("#editName").val(task.name);
+  $("#editHours").val(task.hours);
+  $("#editComment").val(task.comment);
+
+  $('#editTaskModal').modal('show');
+
+  $('#editTaskForm').off('submit').on('submit', function (e) {
+    e.preventDefault();
+
+    task.name = $("#editName").val();
+    task.hours = $("#editHours").val();
+    task.comment = $("#editComment").val();
+
+    saveTasks(tasks);
+    renderTasks(tasks);
+
+    $('#editTaskModal').modal('hide');
+  });
+});
+
+// No evento de clique do botão de exclusão
+deleteButton.on("click", function () {
+  var taskId = $(this).attr("data-id");
+  var task = tasks.find(function (t) {
+    return t.id === taskId;
+  });
+
+  // Quando o botão de exclusão no modal de confirmação é clicado
+  $("#confirmDeleteButton").on("click", function () {
+    // Exclua a tarefa
+    tasks = tasks.filter(function (t) {
+      return t.id !== taskId;
+    });
+
+    // Salve as tarefas
+    saveTasks(tasks);
+
+    // Renderize as tarefas novamente
+    renderTasks(tasks);
+
+    // Feche o modal de confirmação
+    $("#deleteTaskModal").modal("hide");
+  });
+
+  // Abra o modal de confirmação
+  $("#deleteTaskModal").modal("show");
+});
+
+taskElement.append(checkbox, name, hours, comment, editButton, deleteButton);
 
 
   taskElement.attr("data-id", task.id);
@@ -204,9 +266,72 @@ function filterTasks(status) {
 
 // Executa quando o documento estiver pronto
 $(document).ready(function () {
+
   // Carrega as tarefas do localStorage e renderiza na interface
   tasks = loadTasks();
   renderTasks(tasks);
+
+  // Adiciona um evento de input ao campo de comentário
+  $("#comment").on("input", function () {
+    var charCount = $(this).val().length;
+    var remainingChars = 200 - charCount;
+    $("#char-count").text(remainingChars + "/200");
+  });
+
+  $(".column").on("drop", function (event) {
+    event.preventDefault();
+    var taskId = event.originalEvent.dataTransfer.getData("text/plain");
+    var columnId = $(this).attr("id");
+  
+    // Encontre a tarefa correspondente
+    var task = tasks.find(function (t) {
+      return t.id === taskId;
+    });
+  
+    if (task) {
+      // Obtenha o status atual da tarefa e da coluna de destino
+      var currentStatus = task.status;
+      var targetStatus = columnId;
+  
+      console.log(`Tarefa: ${task.name} (ID: ${task.id})`);
+      console.log(`Status Atual: ${currentStatus}`);
+      console.log(`Coluna de Destino: ${targetStatus}`);
+  
+      if (
+        (currentStatus === "todo" && targetStatus === "doing") ||
+        (currentStatus === "doing" && targetStatus === "todo")
+      ) {
+        // Movimentação permitida de "A fazer" para "Em andamento" e vice-versa
+  
+        // Mova a tarefa para a nova coluna
+        task.status = targetStatus;
+        console.log("Movimentação permitida.");
+        console.log("Novo Status: " + task.status);
+  
+        saveTasks(tasks);
+        renderTasks(tasks);
+      } else {
+        // Movimento de tarefa não permitido
+        console.log("Movimento de tarefa não permitido.");
+        var alertMessage = "Movimento de tarefa não permitido.";
+        $('#customAlertMessage').text(alertMessage);
+        $('#customAlertModal').modal('show');
+      }
+    }
+  });      
+
+    // Delegação de eventos para lidar com o evento "dragstart" nas tarefas (elementos dinâmicos)
+    $(document).on("dragstart", ".card", function (event) {
+      // Define o ID da tarefa como dado arrastável
+      event.originalEvent.dataTransfer.setData("text/plain", $(this).attr("data-id"));
+    });
+});
+
+// Agora, adicione uma função para lidar com o evento "dragstart" nas tarefas:
+$(".card").on("dragstart", function (event) {
+  // Define o ID da tarefa como dado arrastável
+  event.originalEvent.dataTransfer.setData("text/plain", $(this).attr("data-id"));
+});
 
   // Adiciona um evento de input ao campo de comentário
   $("#comment").on("input", function () {
@@ -250,8 +375,8 @@ $(document).ready(function () {
     $("#comment").val("");
   });
 
-  $(".card").on("dragstart", function (event) {
-    event.originalEvent.dataTransfer.setData("task-id", $(this).attr("data-id"));
+  $(".tasks").on("dragstart", ".task", function (event) {
+    event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
   });
 
   // Adiciona um evento de dragover às colunas
@@ -262,125 +387,38 @@ $(document).ready(function () {
   // Adiciona um evento de drop às colunas
   $(".column").on("drop", function (event) {
     event.preventDefault();
-
-    var taskId = event.originalEvent.dataTransfer.getData("task-id");
-
+    var taskId = event.originalEvent.dataTransfer.getData("text/plain");
+    var columnId = $(this).attr("id");
+  
+    // Encontre a tarefa correspondente
     var task = tasks.find(function (t) {
       return t.id === taskId;
     });
+  
+    if (task) {
+      // Obtenha o status atual da tarefa e da coluna de destino
+      var currentStatus = task.status;
+      var targetStatus = columnId;
+  
+      if (
+        (currentStatus === "todo" && targetStatus === "doing") ||
+        (currentStatus === "doing" && (targetStatus === "todo" || targetStatus === "done")) ||
+        (currentStatus === "done" && targetStatus === "doing")
+      ) {
+        // Movimentação permitida
+        task.status = targetStatus;
+        saveTasks(tasks);
+        renderTasks(tasks);
+      } else {
+        // Movimento de tarefa não permitido
+        var alertMessage = "Movimento de tarefa não permitido.";
+        $('#customAlertMessage').text(alertMessage);
+        $('#customAlertModal').modal('show');
+      }
+    }
 
     if (task) {
       task.status = $(this).attr("id"); // Define o status da tarefa com base na coluna em que foi solta
 
-      // Adicione um evento de clique ao botão de edição
-editButton.on("click", function () {
-  var taskId = $(this).closest(".card").attr("data-id");
-  var task = tasks.find(function (t) {
-    return t.id === taskId;
-  });
-
-  $("#editName").val(task.name);
-  $("#editHours").val(task.hours);
-  $("#editComment").val(task.comment);
-
-  $('#editTaskModal').modal('show');
-
-  $('#editTaskForm').off('submit').on('submit', function (e) {
-    e.preventDefault();
-
-    task.name = $("#editName").val();
-    task.hours = $("#editHours").val();
-    task.comment = $("#editComment").val();
-
-    saveTasks(tasks);
-    renderTasks(tasks);
-
-    $('#editTaskModal').modal('hide');
-  })
-})
-
-deleteButton.on("click", function () {
-  var taskId = $(this).closest(".card").attr("data-id");
-  var task = tasks.find(function (t) {
-    return t.id === taskId;
-  });
-
-  var confirmDelete = confirm("Você tem certeza que quer excluir essa tarefa? Essa ação será permanente.");
-
-  if (confirmDelete) {
-    tasks = tasks.filter(function(t) {
-      return t.id !== taskId;
-    });
-
-    saveTasks(tasks);
-    renderTasks(tasks);
-  }
-  })
-
-// Abra um modal de confirmação para exclusão
-var confirmDelete = confirm("Você tem certeza que quer excluir essa tarefa? Esta ação é permanente.");
-if (confirmDelete) {
-  tasks = tasks.filter(function (t) {
-    return t.id !== taskId;
-  });
-
-  saveTasks(tasks);
-  renderTasks(tasks);
-}
-
-      // Função para editar uma tarefa
-      function editTask(event) {
-        var taskElement = $(event.target).closest(".card");
-        var taskId = taskElement.attr("data-id");
-        var task = tasks.find(function (t) {
-          return t.id === taskId;
-        });
-      
-        if (task) {
-          $("#editName").val(task.name);
-          $("#editHours").val(task.hours.replace(/\D/g, '')); // Remove todos os não-dígitos do tempo
-          $("#editComment").val(task.comment);
-      
-          $('#editTaskModal').modal('show');
-      
-          $('#editTaskForm').off('submit').on('submit', function (e) {
-            e.preventDefault();
-      
-            task.name = $("#editName").val();
-            task.hours = convertTime($("#editHours").val());
-            task.comment = $("#editComment").val();
-      
-            saveTasks(tasks);
-            renderTasks(tasks);
-      
-            $('#editTaskModal').modal('hide');
-          })
-        }
-      }
-      
-
-// Função para confirmar a exclusão de uma tarefa
-function confirmDeleteTask(event) {
-  var taskElement = $(event.target).closest(".card");
-  var taskId = taskElement.attr("data-id");
-  var task = tasks.find(function (t) {
-    return t.id === taskId;
-  });
-
-  if (task) {
-    var confirmDelete = confirm("Você tem certeza que quer excluir essa tarefa? Essa ação será permanente.");
-
-    if (confirmDelete) {
-      tasks = tasks.filter(function(t) {
-        return t.id !== taskId;
-      });
-
-      saveTasks(tasks);
-      renderTasks(tasks);
-    }
-  }
-}
-
     }
   });
-});

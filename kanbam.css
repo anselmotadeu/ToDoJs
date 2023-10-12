@@ -46,6 +46,12 @@ body {
 .column h2 {
   font-size: 1.5em;
   margin-bottom: 20px;
+  text-align: center;
+  color: blue;
+}
+
+.text-center {
+  text-align: center !important;
 }
 
 .tasks .card {
