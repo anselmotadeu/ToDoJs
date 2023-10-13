@@ -7,30 +7,46 @@ var tasks = [];
 
 // Função para converter o tempo inserido pelo usuário
 function convertTime(input) {
-  var totalMinutes = parseInt(input);
+  var hours = input.substring(0, 2);
+  var minutes = input.substring(2, 4);
 
-  var days = Math.floor(totalMinutes / 480); // 480 minutos em um dia
-  var remainingMinutes = totalMinutes % 480;
-  var hours = Math.floor(remainingMinutes / 60);
-  var minutes = remainingMinutes % 60;
+  var totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
 
-  var timeString = "";
+  if (totalMinutes >= 480) {
+    var days = Math.floor(totalMinutes / 480);
+    var remainingMinutes = totalMinutes % 480;
+    var remainingHours = Math.floor(remainingMinutes / 60);
+    remainingMinutes = remainingMinutes % 60;
 
-  if (days > 0) {
-    timeString += days + (days > 1 ? " dias" : " dia");
+    var timeString = "";
+
+    if (days > 0) {
+      timeString += days + " " + (days === 1 ? "dia" : "dias");
+      if (remainingHours > 0) {
+        timeString += ", " + remainingHours + " " + (remainingHours === 1 ? "hora" : "horas");
+      }
+    } else if (remainingHours > 0) {
+      timeString += remainingHours + " " + (remainingHours === 1 ? "hora" : "horas");
+    }
+
+    if (remainingMinutes > 0) {
+      if (timeString !== "") {
+        timeString += " e ";
+      }
+      timeString += remainingMinutes + " " + (remainingMinutes === 1 ? "minuto" : "minutos");
+    }
+
+    return timeString;
+  } else {
+    var formattedHours = hours + " hora";
+    if (hours !== "01") {
+      formattedHours += "s";
+    }
+    if (minutes !== "00") {
+      formattedHours += " e " + minutes + " minuto" + (minutes !== "01" ? "s" : "");
+    }
+    return formattedHours;
   }
-
-  if (hours > 0) {
-    if (timeString !== "") timeString += ", ";
-    timeString += hours + (hours > 1 ? " horas" : " hora");
-  }
-
-  if (minutes > 0) {
-    if (timeString !== "") timeString += ", ";
-    timeString += minutes + (minutes > 1 ? " minutos" : " minuto");
-  }
-
-  return timeString;
 }
 
 // Função para criar um objeto tarefa a partir dos dados informados pelo usuário
@@ -317,6 +333,17 @@ $(document).ready(function () {
         $('#customAlertMessage').text(alertMessage);
         $('#customAlertModal').modal('show');
       }
+
+      $('#editTaskModal').on('show.bs.modal', function (e) {
+        var editHoursInput = $('#editHours');
+      
+        // Adicione uma função para converter e exibir o tempo quando o modal é exibido
+        editHoursInput.on('input', function () {
+          var input = editHoursInput.val();
+          var convertedTime = convertTime(input);
+          editHoursInput.val(convertedTime);
+        });
+      });      
     }
   });      
 
