@@ -94,6 +94,31 @@ function createTaskElement(task) {
   var hours = $("<span></span>").text(task.hours);
   var comment = $("<p></p>").text(task.comment);
 
+  // Adicione um manipulador de eventos ao checkbox para mover a tarefa para "Concluído" ou "Em andamento"
+checkbox.on("change", function () {
+  var taskId = taskElement.attr("data-id");
+  var task = tasks.find(function (t) {
+    return t.id === taskId;
+  });
+
+  if (task) {
+    task.done = checkbox.prop("checked");
+
+    if (task.done) {
+      task.status = "done";
+    } else {
+      task.status = "doing"; // Define o status de volta para "Em andamento"
+
+      // Aqui você pode adicionar a lógica para definir o status de volta para "A fazer" se necessário.
+      // task.status = "todo";
+    }
+
+    // Salve as tarefas e renderize a interface
+    saveTasks(tasks);
+    renderTasks(tasks);
+  }
+});
+
   // Adiciona os botões de editar e excluir
   var editButton = $("<span></span>").addClass("edit-icon").html('<i class="fas fa-pencil-alt"></i>');
   var deleteButton = $("<span></span>").addClass("delete-icon").html('<i class="fas fa-trash-alt"></i>');
