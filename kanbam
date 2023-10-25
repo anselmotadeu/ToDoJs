@@ -90,10 +90,8 @@ function deleteTask(id) {
   });
 
   // Recalcula o percentual de conclusão após excluir a tarefa
-  saveTasks(tasks);
-  renderTasks(tasks);
   updateProgressBar();
-  $("#deleteTaskModal").modal("hide");
+  saveTasks(tasks);
 }
 
 // Função para criar um elemento HTML para representar uma tarefa na interface
@@ -213,6 +211,23 @@ calculateAndUpdateProgress();
       updateProgressBar(); // Atualiza a barra de progresso
     }
   });
+  
+  // Ao excluir uma tarefa
+  $("#confirmDeleteButton").on("click", function () {
+    // Exclua a tarefa
+    tasks = tasks.filter(function (t) {
+      return t.id !== taskId;
+    });
+  
+    // Salve as tarefas
+    saveTasks(tasks);
+  
+    // Renderize as tarefas novamente
+    renderTasks(tasks);
+  
+    // Atualiza a barra de progresso
+    updateProgressBar();
+  });
 
   // Adiciona os botões de editar e excluir
   var editButton = $("<span></span>").addClass("edit-icon").html('<i class="fas fa-pencil-alt"></i>');
@@ -248,7 +263,6 @@ calculateAndUpdateProgress();
   });
 });
 
-// No clique do botão de excluir
 deleteButton.on("click", function () {
   var taskId = $(this).attr("data-id");
 
@@ -262,13 +276,12 @@ deleteButton.on("click", function () {
     renderTasks(tasks);
     updateProgressBar();
 
-    // Agora, ao invés de fechar manualmente o modal, vamos usar a função 'hide' do Bootstrap
-    $('#deleteTaskModal').modal('hide');
+    $("#deleteTaskModal").modal("hide");
   });
 
   // No clique do botão de cancelar dentro do modal
-  $("#cancelDeleteButton").off().on("click", function () {
-    $('#deleteTaskModal').modal('hide');
+  $("#cancelDeleteButton").on("click", function () {
+    $("#deleteTaskModal").modal("hide");
   });
 
   $("#deleteTaskModal").modal("show");
