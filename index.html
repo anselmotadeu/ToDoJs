@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,14 +9,15 @@
   <link rel="stylesheet" href="kanbam.css">
 
   <!-- Bootstrap CSS (Bootstrap 4) -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <!-- Importa o jQuery para facilitar a manipulação do DOM e a interação com o usuário -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <!-- Bootstrap JavaScript (Bootstrap 4) -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
   <!-- Cria um container para o Kanban Board -->
   <div class="container">
@@ -31,16 +33,17 @@
         <label for="name">Nome da Tarefa</label>
         <input type="text" class="form-control" id="name" required maxlength="50">
         <div id="name-error" class="text-danger"></div>
-      </div>    
+      </div>
       <div class="form-group">
         <label for="hours">Horas Previstas</label>
-        <input type="number" class="form-control" id="hours" required pattern="^(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])?$" title="Insira o tempo no formato HHMM (ex: 0200 para 2 horas, 0030 para 30 minutos)">
-    </div>    
-    <div class="form-group">
-      <label for="comment">Comentário (opcional)</label>
-      <textarea class="form-control" id="comment" rows="3" maxlength="200"></textarea>
-      <span id="char-count" class="text-muted float-right">200/200</span>
-    </div>    
+        <input type="number" class="form-control" id="hours" required pattern="^(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])?$"
+          title="Insira o tempo no formato HHMM (ex: 0200 para 2 horas, 0030 para 30 minutos)">
+      </div>
+      <div class="form-group">
+        <label for="comment">Comentário (opcional)</label>
+        <textarea class="form-control" id="comment" rows="3" maxlength="400"></textarea>
+        <span id="char-count" class="text-muted float-right">400/400</span>
+      </div>
       <button type="submit" class="btn btn-primary">Adicionar tarefa</button>
     </form>
 
@@ -65,13 +68,14 @@
       <!-- Cria um span para exibir o número de tarefas concluídas -->
       <span><b>Concluído:</b> <span id="done-counter">0</span></span>
     </div>
-    
+
     <!-- Adiciona uma div para a barra de progresso -->
     <div class="progress">
-      <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+      <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+        aria-valuemax="100" style="width: 0%;">
         <span id="progress-text">0% Concluído</span>
       </div>
-    </div>       
+    </div>
 
     <!-- Cria uma div para as colunas do Kanban Board -->
     <div class="columns">
@@ -94,77 +98,83 @@
   </div>
 
   <!-- Modal de Edição -->
-<div class="modal fade" id="editTaskModal" tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editTaskModalLabel">Editar Tarefa</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form id="editTaskForm">
-          <div class="form-group">
-            <label for="editName">Nome da Tarefa</label>
-            <input type="text" class="form-control" id="editName" required maxlength="30">
-          </div>    
-          <div class="form-group">
-            <label for="editHours">Horas Previstas</label>
-            <input type="number" class="form-control" id="editHours" required pattern="^(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])?$" title="Insira o tempo no formato HHMM (ex: 0200 para 2 horas, 0030 para 30 minutos)">
-          </div>    
-          <div class="form-group">
-            <label for="editComment">Comentário (opcional)</label>
-            <textarea class="form-control" id="editComment" rows="3" maxlength="200"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-        </form>
+  <div class="modal fade" id="editTaskModal" tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editTaskModalLabel">Editar Tarefa</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="editTaskForm">
+            <div class="form-group">
+              <label for="editName">Nome da Tarefa</label>
+              <input type="text" class="form-control" id="editName" required maxlength="30">
+            </div>
+            <div class="form-group">
+              <label for="editHours">Horas Previstas</label>
+              <input type="number" class="form-control" id="editHours" required
+                pattern="^(0[0-9]|1[0-9]|2[0-3])([0-5][0-9])?$"
+                title="Insira o tempo no formato HHMM (ex: 0200 para 2 horas, 0030 para 30 minutos)">
+            </div>
+            <div class="form-group">
+              <label for="editComment">Comentário (opcional)</label>
+              <textarea class="form-control" id="editComment" rows="3" maxlength="200"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal de Confirmação de Exclusão -->
-<div class="modal fade" id="deleteTaskModal" tabindex="-1" role="dialog" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteTaskModalLabel">Confirmar Exclusão</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+  <!-- Modal de Confirmação de Exclusão -->
+  <div class="modal fade" id="deleteTaskModal" tabindex="-1" role="dialog" aria-labelledby="deleteTaskModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteTaskModalLabel">Confirmar Exclusão</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <p>Tem certeza de que deseja excluir esta tarefa?<br>Esta ação é irreversível.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="confirmDeleteButton">Confirmar Exclusão</button>
+        </div>
       </div>
-      <div class="modal-body text-center">
-        <p>Tem certeza de que deseja excluir esta tarefa?<br>Esta ação é irreversível.</p>
-    </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="confirmDeleteButton">Confirmar Exclusão</button>
-      </div>    
     </div>
   </div>
-</div>
 
-<div class="modal fade" id="customAlertModal" tabindex="-1" role="dialog" aria-labelledby="customAlertModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="customAlertModalLabel">Atenção</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="customAlertMessage">
-        <!-- Mensagem personalizada será exibida aqui -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+  <div class="modal fade" id="customAlertModal" tabindex="-1" role="dialog" aria-labelledby="customAlertModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="customAlertModalLabel">Atenção</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="customAlertMessage">
+          <!-- Mensagem personalizada será exibida aqui -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <!-- Importa o arquivo JavaScript que contém a lógica do Kanban Board -->
   <script src="kanbam.js"></script>
 </body>
+
 </html>
