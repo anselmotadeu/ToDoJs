@@ -112,21 +112,12 @@ function createTaskElement(task) {
     });
   
     if (task) {
-      if (task.status === "todo") {
-        // Se a tarefa está em "todo" e o checkbox é marcado, mova para "done"
-        if (checkbox.prop("checked")) {
-          task.status = "done";
-        }
-      } else if (task.status === "done") {
-        // Se a tarefa está em "done" e o checkbox é desmarcado, mova para "doing"
-        if (!checkbox.prop("checked")) {
-          task.status = "doing";
-        }
-      } else if (task.status === "doing") {
-        // Se a tarefa está em "doing" e o checkbox é desmarcado, mova para "todo"
-        if (!checkbox.prop("checked")) {
-          task.status = "todo";
-        }
+      if (task.status === "todo" && checkbox.prop("checked")) {
+        task.status = "done";
+      } else if (task.status === "done" && !checkbox.prop("checked")) {
+        task.status = "doing";
+      } else if (task.status === "doing" && !checkbox.prop("checked")) {
+        task.status = "todo";
       }
   
       task.done = checkbox.prop("checked");
