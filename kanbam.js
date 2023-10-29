@@ -519,6 +519,8 @@ $(".card").on("dragstart", function (event) {
     $("#name").val("");
     $("#hours").val("");
     $("#comment").val("");
+
+    $("#char-count").text("400/400");
   });
 
   $(".tasks").on("dragstart", ".task", function (event) {
