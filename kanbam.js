@@ -409,8 +409,8 @@ $(document).ready(function () {
   // Adiciona um evento de input ao campo de comentário
   $("#comment").on("input", function () {
     var charCount = $(this).val().length;
-    var remainingChars = 200 - charCount;
-    $("#char-count").text(remainingChars + "/200");
+    var remainingChars = 400 - charCount;
+    $("#char-count").text(remainingChars + "/400");
   });
 
   $(".column").on("drop", function (event) {
@@ -482,8 +482,8 @@ $(".card").on("dragstart", function (event) {
   // Adiciona um evento de input ao campo de comentário
   $("#comment").on("input", function () {
     var charCount = $(this).val().length;
-    var remainingChars = 200 - charCount;
-    $("#char-count").text(remainingChars + "/200");
+    var remainingChars = 400 - charCount;
+    $("#char-count").text(remainingChars + "/400");
   });
 
   // Adiciona um evento de submit ao formulário
