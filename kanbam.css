@@ -108,3 +108,46 @@ body {
 .delete-icon i {
   color: #dc3545; /* Cor vermelha para o ícone de excluir */
 }
+
+/* Adição para garantir que as tarefas não quebrem para a próxima linha */
+.tasks {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card {
+  flex-basis: 100%;
+  margin-bottom: 10px;
+}
+
+/* Novas regras de mídia para telas menores (mobile) */
+@media (max-width: 767px) {
+  .columns {
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .column {
+    margin: 0;
+    margin-bottom: 20px;
+  }
+
+  .edit-icon,
+  .delete-icon {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .edit-icon i,
+  .delete-icon i {
+    font-size: 1.2em;
+  }
+
+  .header h1 {
+    font-size: 1.5em;
+  }
+
+  .counters span {
+    font-size: 1em;
+  }
+}
