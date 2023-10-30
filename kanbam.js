@@ -236,6 +236,7 @@ calculateAndUpdateProgress();
     renderTasks(tasks);
 
     $('#editTaskModal').modal('hide');
+
   });
 });
 
@@ -403,6 +404,13 @@ $(document).ready(function () {
     var remainingChars = 400 - charCount;
     $("#char-count").text(remainingChars + "/400");
   });
+
+  // Adiciona um evento de input ao campo de comentário no modal de edição
+  $("#editComment").on("input", function () {
+    var charCount = $(this).val().length;
+    remainingChars = 400 - charCount;
+    $("#edit-char-count").text(remainingChars + "/400");
+  });  
 
   $(".column").on("drop", function (event) {
     event.preventDefault();
