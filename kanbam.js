@@ -398,6 +398,18 @@ $(document).ready(function () {
   renderTasks(tasks);
   updateProgressBar();
 
+  window.addEventListener("scroll", function () {
+    var whatsappButton = document.querySelector(".whatsapp-button");
+    var scrollPosition = window.scrollY || document.documentElement.scrollTop;
+  
+    // Ajuste o limite conforme necessário. Este é um exemplo simples.
+    if (scrollPosition > 500) {
+      whatsappButton.style.display = "block";
+    } else {
+      whatsappButton.style.display = "none";
+    }
+  });
+
   // Adiciona um evento de input ao campo de comentário
   $("#comment").on("input", function () {
     var charCount = $(this).val().length;
