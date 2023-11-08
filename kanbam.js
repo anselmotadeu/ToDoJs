@@ -399,7 +399,7 @@ $(document).ready(function () {
   updateProgressBar();
 
   window.addEventListener("scroll", function () {
-    var whatsappButton = document.querySelector(".whatsapp-button");
+    var whatsappButton = document.querySelector(".anstech-button");
     var scrollPosition = window.scrollY || document.documentElement.scrollTop;
   
     // Ajuste o limite conforme necessário. Este é um exemplo simples.
