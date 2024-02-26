@@ -225,19 +225,8 @@ calculateAndUpdateProgress();
 
   $('#editTaskModal').modal('show');
 
-  $('#editTaskForm').off('submit').on('submit', function (e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    task.name = $("#editName").val();
-    task.hours = $("#editHours").val();
-    task.comment = $("#editComment").val();
-
-    saveTasks(tasks);
-    renderTasks(tasks);
-
-    $('#editTaskModal').modal('hide');
-
-  });
 });
 
 // No clique do botão de excluir
@@ -522,6 +511,46 @@ $(".card").on("dragstart", function (event) {
       $("#name")[0].setCustomValidity(""); // Limpa a mensagem de erro
   }  
 
+  function validateForm() {
+    var name = document.getElementById('editName').value;
+    if (name.trim() === "") {
+        $("#name-error").text("A definição do nome é obrigatória");
+        setTimeout(function() {
+            $("#name-error").text("");
+        }, 3000);
+        return false;
+    } else if (/^\s*$/.test(name)) {
+        $("#name-error").text("Você deve inserir um nome válido");
+        setTimeout(function() {
+            $("#name-error").text("");
+        }, 3000);
+        return false;
+    } else {
+        $("#name-error").text("");
+        $("#editName")[0].setCustomValidity(""); // Limpa a mensagem de erro
+        return true;
+    }
+}
+
+document.getElementById('editTaskForm').addEventListener('submit', function (event) {
+    if (!validateForm()) {
+        event.preventDefault(); // Impede o envio do formulário
+    }
+});
+
+document.getElementById('editTaskForm').addEventListener('submit', function (event) {
+  var name = document.getElementById('editName').value;
+  var hours = document.getElementById('editHours').value;
+  var comment = document.getElementById('editComment').value;
+
+  // Substitua 'originalName', 'originalHours' e 'originalComment'
+  // pelos valores originais dos campos antes da edição
+  if (name === originalName && hours === originalHours && comment === originalComment) {
+      alert("É necessário que haja alguma alteração na terafa para conseguir salvar essa edição");
+      event.preventDefault(); // Impede o envio do formulário
+  }
+});
+
     var task = createTask(name, hours, comment);
 
     tasks.push(task); // Adiciona a nova tarefa ao array de tarefas
@@ -548,6 +577,28 @@ $(".card").on("dragstart", function (event) {
   document.getElementById('hours').addEventListener('input', function () {
     this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
   });
+
+  $('#editTaskModal').on('shown.bs.modal', function () {
+    var nameLength = document.getElementById('editName').value.length;
+    document.getElementById('edit-char-count-name').textContent = (50 - nameLength) + '/50';
+
+    var commentLength = document.getElementById('editComment').value.length;
+    document.getElementById('edit-char-count').textContent = (400 - commentLength) + '/400';
+
+    document.getElementById('editName').addEventListener('input', function () {
+        var remaining = 50 - this.value.length;
+        document.getElementById('edit-char-count-name').textContent = remaining + '/50';
+    });
+
+    document.getElementById('editComment').addEventListener('input', function () {
+        var remaining = 400 - this.value.length;
+        document.getElementById('edit-char-count').textContent = remaining + '/400';
+    });
+});
+
+document.getElementById('editHours').addEventListener('input', function () {
+  this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+});
   
   $(".tasks").on("dragstart", ".task", function (event) {
     event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
