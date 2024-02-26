@@ -539,6 +539,10 @@ $(".card").on("dragstart", function (event) {
     document.getElementById('char-count-name').textContent = remaining + '/50';
 });
 
+  document.getElementById('hours').addEventListener('input', function () {
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4);
+  });
+  
   $(".tasks").on("dragstart", ".task", function (event) {
     event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
   });
