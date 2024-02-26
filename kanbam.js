@@ -49,6 +49,59 @@ function convertTime(input) {
   }
 }
 
+// Função para converter o tempo em horas e minutos
+function convertTimeToDisplay(totalMinutes) {
+  if (totalMinutes >= 480) {
+    var days = Math.floor(totalMinutes / 480);
+    var remainingMinutes = totalMinutes % 480;
+    var remainingHours = Math.floor(remainingMinutes / 60);
+    remainingMinutes = remainingMinutes % 60;
+
+    var timeString = "";
+
+    if (days > 0) {
+      timeString += days + " " + (days === 1 ? "dia" : "dias");
+      if (remainingHours > 0) {
+        timeString += ", " + remainingHours + " " + (remainingHours === 1 ? "hora" : "horas");
+      }
+    } else if (remainingHours > 0) {
+      timeString += remainingHours + " " + (remainingHours === 1 ? "hora" : "horas");
+    }
+
+    if (remainingMinutes > 0) {
+      if (timeString !== "") {
+        timeString += " e ";
+      }
+      timeString += remainingMinutes + " " + (remainingMinutes === 1 ? "minuto" : "minutos");
+    }
+
+    return timeString;
+  } else {
+    var hours = Math.floor(totalMinutes / 60);
+    var minutes = totalMinutes % 60;
+
+    var formattedHours = hours + " hora";
+    if (hours !== 1) {
+      formattedHours += "s";
+    }
+    if (minutes > 0) {
+      formattedHours += " e " + minutes + " minuto" + (minutes !== 1 ? "s" : "");
+    }
+
+    return formattedHours;
+  }
+}
+
+// Supondo que 'task' seja o objeto da tarefa que você está editando
+var totalMinutes = convertTimeToDisplay(totalMinutes);
+var formattedTime = convertTimeToDisplay(totalMinutes);
+
+// Definir o valor do campo 'Horas Previstas'
+$('#editHours').val(totalMinutes);
+
+// Exibir o tempo formatado em algum lugar, como um span ou div
+$('#displayEditTime').text(formattedTime);
+
 // Função para criar um objeto tarefa a partir dos dados informados pelo usuário
 function createTask(name, hours, comment) {
   return {
@@ -232,27 +285,26 @@ calculateAndUpdateProgress();
 // No clique do botão de excluir
 deleteButton.on("click", function () {
   var taskId = $(this).attr("data-id");
-
-  // No clique do botão de confirmação dentro do modal
-  $("#confirmDeleteButton").off().on("click", function () {
-    tasks = tasks.filter(function (t) {
-      return t.id !== taskId;
-    });
-
-    saveTasks(tasks);
-    renderTasks(tasks);
-    updateProgressBar();
-
-    // Agora, ao invés de fechar manualmente o modal, vamos usar a função 'hide' do Bootstrap
-    $('#deleteTaskModal').modal('hide');
+  
+// No clique do botão de confirmação dentro do modal
+$("#confirmDeleteButton").one("click", function () {
+  tasks = tasks.filter(function (t) {
+    return t.id !== taskId;
   });
 
-  // No clique do botão de cancelar dentro do modal
-  $("#cancelDeleteButton").off().on("click", function () {
-    $('#deleteTaskModal').modal('hide');
-  });
+  $('#deleteTaskModal').modal('hide');
 
-  $("#deleteTaskModal").modal("show");
+  saveTasks(tasks);
+  renderTasks(tasks);
+  updateProgressBar();
+});
+
+// No clique do botão de cancelar dentro do modal
+$("#cancelDeleteButton").one("click", function () {
+  $('#deleteTaskModal').modal('hide');
+});
+
+$("#deleteTaskModal").modal("show");
 });
 
 taskElement.append(checkbox, name, hours, comment, editButton, deleteButton);
@@ -398,6 +450,23 @@ $(document).ready(function () {
       whatsappButton.style.display = "none";
     }
   });
+
+// Chamada inicial quando o modal é exibido
+$('#editTaskModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget); // Botão que acionou o modal
+  var taskId = button.data('task-id'); // Obtém o ID da tarefa do botão (ajuste conforme sua implementação)
+  var task = getTaskById(taskId); // Substitua pela lógica correta para obter a tarefa
+
+  // Agora, task.hours contém o tempo em minutos
+  var totalMinutes = task.hours;
+  var formattedTime = convertTimeToDisplay(totalMinutes); // Formato amigável
+
+  // Definir o valor do campo 'Horas Previstas' como minutos exatos
+  $('#editHours').val(totalMinutes);
+
+  // Exibir o tempo formatado na div
+  $('#displayEditTime').text(formattedTime);
+})
 
   // Adiciona um evento de input ao campo de comentário
   $("#comment").on("input", function () {
@@ -567,6 +636,7 @@ document.getElementById('editTaskForm').addEventListener('submit', function (eve
     $("#comment").val("");
 
     $("#char-count").text("400/400");
+    $("#char-count-name").text("50/50");
   });
 
   document.getElementById('name').addEventListener('input', function () {
