@@ -295,10 +295,10 @@ $("#confirmDeleteButton").one("click", function () {
   });
 
   $('#deleteTaskModal').modal('hide');
+  updateProgressBar();
 
   saveTasks(tasks);
   renderTasks(tasks);
-  updateProgressBar();
 });
 
 // No clique do botão de cancelar dentro do modal
