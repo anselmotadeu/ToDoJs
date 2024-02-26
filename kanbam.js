@@ -534,6 +534,11 @@ $(".card").on("dragstart", function (event) {
     $("#char-count").text("400/400");
   });
 
+  document.getElementById('name').addEventListener('input', function () {
+    var remaining = 50 - this.value.length;
+    document.getElementById('char-count-name').textContent = remaining + '/50';
+});
+
   $(".tasks").on("dragstart", ".task", function (event) {
     event.originalEvent.dataTransfer.setData("text/plain", event.target.id);
   });
