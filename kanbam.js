@@ -255,8 +255,8 @@ calculateAndUpdateProgress();
       }
   
       saveTasks(tasks);
-      renderTasks(tasks);
       updateProgressBar(); // Atualiza a barra de progresso
+      renderTasks(tasks);
     }
   });
 
@@ -295,9 +295,9 @@ $("#confirmDeleteButton").one("click", function () {
   });
 
   $('#deleteTaskModal').modal('hide');
-  updateProgressBar();
 
   saveTasks(tasks);
+  updateProgressBar();
   renderTasks(tasks);
 });
 
