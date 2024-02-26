@@ -507,14 +507,20 @@ $(".card").on("dragstart", function (event) {
 
     if (name.trim() === "") {
       $("#name-error").text("A definição do nome é obrigatória");
+      setTimeout(function() {
+          $("#name-error").text("");
+      }, 3000);
       return;
-    } else if (/^\s*$/.test(name)) {
+  } else if (/^\s*$/.test(name)) {
       $("#name-error").text("Você deve inserir um nome válido");
+      setTimeout(function() {
+          $("#name-error").text("");
+      }, 3000);
       return;
-    } else {
+  } else {
       $("#name-error").text("");
       $("#name")[0].setCustomValidity(""); // Limpa a mensagem de erro
-    }
+  }  
 
     var task = createTask(name, hours, comment);
 
