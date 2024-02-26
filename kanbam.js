@@ -207,6 +207,8 @@ function createTaskElement(task) {
   }
   
   function updateProgressBar(percentComplete) {
+
+    percentComplete = isNaN(percentComplete) ? 0 : percentComplete;
     var formattedPercent = percentComplete % 1 === 0 ? Math.round(percentComplete) : percentComplete.toFixed(2);
     
     $("#progress-bar").css("width", percentComplete + "%");
