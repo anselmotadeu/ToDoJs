@@ -40,20 +40,23 @@
     <form id="task-form" class="mt-3">
       <div class="form-group">
         <label for="name">Nome da Tarefa</label>
-        <input type="text" class="form-control" id="name" required maxlength="50">
+        <input type="text" class="form-control" id="name" required maxlength="50"
+        placeholder="Nome da Tarefa">
         <div id="name-error" class="text-danger"></div>
         <span id="char-count-name" class="text-muted float-right">50/50</span>
       </div>
       <div class="form-group">
-        <label for="hours">Horas Previstas</label>
-        <input type="text" class="form-control" id="hours" required pattern="^[0-9]{4}$"
-          title="Insira o tempo no formato HHMM (ex: 0200 para 2 horas, 0030 para 30 minutos)">
-    </div>    
+        <div class="form-group">
+          <label for="hours">Horas Previstas</label>
+          <input type="text" class="form-control" id="hours" required pattern="^[0-9]{4}$"
+            title="Insira o tempo no formato HHMM (ex: 0200 para 2 horas, 0030 para 30 minutos)"
+            placeholder="HHMM (ex: 0200 para 2 horas, 0030 para 30 minutos)">
+        </div>    
       <div class="form-group">
         <label for="comment">Comentário (opcional)</label>
-        <textarea class="form-control" id="comment" rows="3" maxlength="400"></textarea>
+        <textarea class="form-control" id="comment" rows="3" maxlength="400" placeholder="Descrição da tarefa..."></textarea>
         <span id="char-count" class="text-muted float-right">400/400</span>
-      </div>
+        </div>
       <button type="submit" class="btn btn-primary">Adicionar tarefa</button>
     </form>
 
